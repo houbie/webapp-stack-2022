@@ -105,3 +105,10 @@ dist
 
 .idea
 *.iml
+
+.venv
+*.egg-info
+build
+.pdm.toml
+generated
+.pyprojectx

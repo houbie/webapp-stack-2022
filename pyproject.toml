@@ -1,0 +1,77 @@
+[project]
+name = "webapp_stack_2022"
+description = "Ivo's favorite webapp stack"
+authors = [
+    { name = "Ivo Houbrechts", email = "ivo@houbrechts-it.be" },
+]
+dependencies = [
+    "aws-lambda-powertools>=2.5.0",
+    "pynamodb>=5.3.4",
+    "Flask>=2.2.2",
+    "connexion>=2.14.1",
+    "requests>=2.28.1",
+    "serverless-wsgi>=3.0.1",
+    "boto3>=1.26.44",
+]
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dynamic = ["version"]
+
+[tool.pdm]
+version = { source = "scm" }
+[tool.pdm.build]
+package-dir = "src"
+editable-backend = "editables"
+[tool.pdm.dev-dependencies]
+tests = [
+    "pytest>=7.2.0",
+    "pytest-dynamodb>=2.1.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    'ignore::DeprecationWarning:connexion',
+    'ignore::DeprecationWarning:flask'
+]
+
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.messages_control]
+disable = [
+    # Disable docstrings checks as we don't require excessive documentation.
+    "missing-docstring",
+]
+
+[tool.pyprojectx]
+pdm = { requirements = "pdm==2.3.4", post-install = "pw@pre-commit install" }
+
+black = "black==22.12.0"
+isort = "isort==5.11.4"
+pre-commit = "pre-commit==2.21.0"
+jupyter = ["jupyter", "."]
+
+[tool.pyprojectx.aliases]
+install = "pdm install"
+run = "pdm run"
+outdated = "pdm update --outdated"
+test = "pdm run pytest tests"
+export-requirements = "mkdir generated || pw@ pdm export -o generated/requirements.txt --prod"
+generate-app-info = "python bin/generate_app_info.py"
+
+black = "black src tests"
+isort = "isort src tests"
+check-pylint = "pylint src tests"
+check-black = "black src tests --check"
+check = "pw@ check-black && pw@ check-pylint && pw@ test"
+
+build = "pw@ install && pw@ check && pw@ export-requirements && pw@ generate-app-info"
+#notebook = "jupyter notebook -y"
